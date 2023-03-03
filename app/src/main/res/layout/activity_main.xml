@@ -54,15 +54,16 @@
         android:textColor="#FFFFFF"
         android:textSize="14sp" />
 
-    <Button android:id="@+id/btn_EnviarNotificacao"
+    <Button
+        android:id="@+id/btn_EnviarNotificacao"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_gravity="center"
-        android:background="@color/purple_700"
+        android:layout_marginTop="20dp"
+        android:background="@color/teal_700"
         android:text="Enviar Notificações"
+        android:textAllCaps="false"
         android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:textAllCaps="false" />
+        android:textSize="14sp" />
 
 </LinearLayout>

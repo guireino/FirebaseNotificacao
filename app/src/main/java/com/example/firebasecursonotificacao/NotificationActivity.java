@@ -26,12 +26,13 @@ public class NotificationActivity extends AppCompatActivity {
         String url = getIntent().getStringExtra("url");
         String msg = getIntent().getStringExtra("mensagem");
 
-        int id = getIntent().getIntExtra("idNotificacao", -1);
+        int id = getIntent().getIntExtra("idNotificacao",-1);
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+
         notificationManager.cancel(id);
 
-        showNotification(url, msg);
+        showNotification(url,msg);
     }
 
     private void showNotification(String url, String msg) {

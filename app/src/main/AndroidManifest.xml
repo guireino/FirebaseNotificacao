@@ -17,17 +17,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Firebasecursonotificacao">
-        <activity
-            android:name=".NotificationActivity"
+
+        <activity android:name=".NotificationActivity"
             android:exported="false" />
-        <activity
-            android:name=".MainActivity"
+
+        <activity android:name=".MainActivity"
             android:enabled="true"
             android:permission="com.google.android.c2dm.permission.SEND"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,9 +38,32 @@
 
         <receiver android:name=".Firebase.NotificationBroadcast" />
 
+        <!-- se voce colocar o codigo abaixo, mas a classe FirebseService estiver vazia nenhuma notificao sera exibida pra voce -->
+        <service
+            android:name=".Firebase.FirebaseService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- esse codigo é necessario devido ao canal de comunicacao -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
-    </application>
 
+
+        <!-- os dois codigos abaixo servem para mostrar o icone e a cor do texto quando,
+                   o usuario recebe uma notificacao com o aplicativo fechado !-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/common_google_signin_btn_icon_dark" />
+
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/design_default_color_error" />
+
+    </application>
 </manifest>

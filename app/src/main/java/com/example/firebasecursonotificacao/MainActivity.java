@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseApp.initializeApp(this);
-
         switch_Sports = (Switch) findViewById(R.id.switch_Sports);
         switch_Politica = (Switch) findViewById(R.id.switch_Politica);
 
@@ -60,9 +58,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btn_CadastrarToken.setOnClickListener(this);
         btn_Enviar.setOnClickListener(this);
-
-        //switch_Sports.setOnClickListener(this);
-        //switch_Politica.setOnClickListener(this);
 
         configurationSwitch();
 
@@ -150,12 +145,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.btn_CadastrarToken:
                 getToken_0();
-                //Toast.makeText(getBaseContext(), "Button Cadastrar Token", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Button Cadastrar Token", Toast.LENGTH_LONG).show();
             break;
 
             case R.id.btn_EnviarNotificacao:
                 startNotification();
-                //Toast.makeText(getBaseContext(), "Button Enviar Notificacao", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Button Enviar Notificacao", Toast.LENGTH_LONG).show();
             break;
 
         }
@@ -183,16 +178,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             sendNotification(site, notification);
 
-        }catch(Exception e){
+            Log.d("site: ", "site: " + site);
+            Log.d("notification: ", "notification: " + notification);
 
+        }catch(Exception e){
+            Log.e("erro ", "erro: " + e.getMessage() );
         }
 
     }
 
     private void getToken_0(){
 
-        String authorization = "162857612724";
-        String firebase = "FCM";
+        //String authorization = "162857612724";
+        //String firebase = "FCM";
 
         new Thread(new Runnable() { // salvando token no fcm
             @Override
@@ -244,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
-
     }
 
     // enviando notificacao personalizado
@@ -276,11 +273,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         error.printStackTrace();
                     }
 
-                })
-        {
+                }){
+
+            // autentificando app para enviar mensagem para outro app na configuracao firebase do projeto API Firebase Cloud Messaging
             public Map<String, String> getHeaders() throws AuthFailureError {
 
-                Map<String, String> header = new HashMap<String, String>();
+                Map<String, String> header = new HashMap<>();
 
                 header.put("Content-Type", "application/json");
                 header.put("Authorization", "key=AAAAJesR9bQ:APA91bHbAHIBTacMLA6iX4to0jIMhcdfv9Avcuvdz3mzeGOlbTzKvsU40YA1DNi5PFCKjuZjZSLjkXFdt08r0KM0qAwfN_fD1sLHVAgyxjz-ZItZ4_bqWilfEK-4XNZn9zfPAWpcRmAH");
@@ -288,6 +286,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return header;
             }
         };
+
+        Log.e("requestQueue", "requestQueue: " + requestQueue);
+        Log.e("jsonObjectRequest", "jsonObjectRequest: " + jsonObjectRequest);
 
         requestQueue.add(jsonObjectRequest);
     }
@@ -317,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     if(task.isComplete()){
                         Toast.makeText(getBaseContext(), "Sports Realizado com Sucesso", Toast.LENGTH_LONG).show();
-                        Util.setTopic(getBaseContext(), "sports", "sports");  // savando se switch esta true ou false
+                        Util.setTopic(getBaseContext(), "sports", "sports");  // savaldo se switch esta true ou false
                     }else{
                         //switch_Sports.setChecked(false); // esse comando nao vai deixar switch ficar true
                         configurationSwitch();

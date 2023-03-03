@@ -39,38 +39,42 @@ public class FirebaseService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage Msg) {
 
-        FirebaseApp.initializeApp(this);
 
-        if(Msg.getData().size() > 0){
+        if(Msg.getData().size() > 0 ){// esse codigo é executado quando a notificacao vem de outro celular
 
             String msg = Msg.getData().get("mensagem");
-            String title = Msg.getData().get("titulo");
-            String name = Msg.getData().get("nome");
+            String titulo = Msg.getData().get("titulo");
+            String nome = Msg.getData().get("nome");
 
-            String url = Msg.getData().get("urlimagem");
+            String urlimagem = Msg.getData().get("urlimagem");
 
-            String mensagem = msg + " -- " + name + " -- " + url;
+            String mensagem = msg+ " -- "+ nome + " -- "+ urlimagem;
 
-            sendNotification_1(title, mensagem, url);
+            Log.d("jafapps.com", titulo);
+            Log.d("jafapps.com", mensagem);
 
-        }else if(Msg.getNotification() != null){
+            sendNotification_1(titulo,mensagem, urlimagem);
 
-            Log.d("jafapps.com ", Msg.getNotification().getTitle());
-            Log.d("jafapps.com ", Msg.getNotification().getBody());
+        }else if (Msg.getNotification() != null){// esse codigo é executado qunado a notificacao vem do firebase
 
-            String title = Msg.getNotification().getTitle();
+            Log.d("jafapps.com", Msg.getNotification().getTitle());
+            Log.d("jafapps.com", Msg.getNotification().getBody());
+
+            String titulo = Msg.getNotification().getTitle();
             String msg = Msg.getNotification().getBody();
 
-            sendNotification_0(title, msg);
+            sendNotification_0(titulo, msg);
         }
     }
 
     private void sendNotification_0(final String title,final String msg){
 
+        final int id = (int) (System.currentTimeMillis() / 1000);
+
         Intent intent = new Intent(getBaseContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Se a atividade iniciada já estiver em execução na tarefa atual
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), id, intent, PendingIntent.FLAG_ONE_SHOT);
 
         String canal = getString(R.string.default_notification_channel_id);
 
@@ -90,7 +94,7 @@ public class FirebaseService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0, notification.build());
+        notificationManager.notify(id, notification.build());
     }
 
     private void sendNotification_1(final String title, final String msg, final String url){
@@ -107,76 +111,79 @@ public class FirebaseService extends FirebaseMessagingService {
             @Override
             public boolean onResourceReady(Bitmap bitmap, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
 
-                //Ação de abrir
+                // action open
 
-                Intent intent_open = new Intent(getBaseContext(), NotificationActivity.class);
+                Log.d("send ", "sendNotification_1 title: " + title);
+                Log.d("send ", "sendNotification_1 msg: " + msg);
+                Log.d("send ", "sendNotification_1 url: " + url);
 
-                // colocando valores
-                intent_open.putExtra("url", url);
-                intent_open.putExtra("mensagem", msg);
-                intent_open.putExtra("idNotificacao", id);
+                Intent intent_Abrir = new Intent(getBaseContext(), NotificationActivity.class);
 
-                intent_open.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Se a atividade iniciada já estiver em execução na tarefa atual
+                intent_Abrir.putExtra("url", url);
+                intent_Abrir.putExtra("mensagem", msg);
+                intent_Abrir.putExtra("idNotificacao", id);
 
-                PendingIntent pendingIntent_open = PendingIntent.getActivity(getBaseContext(), id, intent_open, PendingIntent.FLAG_UPDATE_CURRENT);
+                intent_Abrir.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                //criando botao notificacao
-                NotificationCompat.Action open = new NotificationCompat.Action(R.drawable.ic_baseline_adb_24, "open", pendingIntent_open);
+                PendingIntent pendingIntent_Abrir = PendingIntent.getActivity(getBaseContext(), id, intent_Abrir, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                // ----------------------------------------------
+                NotificationCompat.Action abrir = new NotificationCompat.Action(R.drawable.ic_baseline_lock_open_24,"Abrir",pendingIntent_Abrir);
 
-                //Ação de fechar
+                // action de close
 
-                Intent intent_close = new Intent(getBaseContext(), NotificationBroadcast.class);
+                Intent intent_Fechar = new Intent(getBaseContext(), NotificationBroadcast.class);
 
-                intent_close.putExtra("idNotificacao", id);
-                intent_close.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent_Fechar.putExtra("idNotificacao", id);
+                intent_Fechar.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                PendingIntent pendingIntent_close = PendingIntent.getBroadcast(getBaseContext(), id, intent_close, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent pending_Fechar = PendingIntent.getBroadcast(getBaseContext(), id, intent_Fechar, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                NotificationCompat.Action close = new NotificationCompat.Action(0, "close", pendingIntent_close);
+                NotificationCompat.Action fechar = new NotificationCompat.Action(0,"Fechar", pending_Fechar);
 
-                // ----------------------------------------------
+                // ==========================================================================================
 
                 Intent intent = new Intent(getBaseContext(), NotificationActivity.class);
 
-                // colocando valores
                 intent.putExtra("url", url);
                 intent.putExtra("mensagem", msg);
 
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Se a atividade iniciada já estiver em execução na tarefa atual
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                 PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), id, intent, PendingIntent.FLAG_ONE_SHOT);
 
                 String canal = getString(R.string.default_notification_channel_id);
 
-                //Uri som = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                // Uri som = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-                // colocando som notificacao baixando no site https://notificationsounds.com
-                Uri som = Uri.parse("android:resource://" + getApplicationContext().getPackageName() + "/" + R.raw.notificationsom);
+                Uri som = Uri.parse("android:resource://"+getApplicationContext().getPackageName() + "/" + R.raw.notificationsom);
 
-                // criando configuracao notificacao personalizada
-                NotificationCompat.Builder notification = new NotificationCompat.Builder(getBaseContext(), canal)
-                        .setSmallIcon(R.mipmap.ic_launcher).setContentTitle(title).setContentText(msg)
-                        .setSound(som).setAutoCancel(true).setLargeIcon(bitmap)
+                NotificationCompat.Builder notification = new NotificationCompat.Builder(getBaseContext(),canal)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(title)
+                        .setContentText(msg)
+                        .setSound(som)
+                        .setAutoCancel(true)
+                        .setLargeIcon(bitmap)
                         .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap))
                         //.setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
-                        .addAction(open).addAction(close)
-                        .setVibrate(new long[] {1000, 1000})
+                        .addAction(abrir)
+                        .addAction(fechar)
+                        .setVibrate(new long[]  {1000,1000})
                         .setContentIntent(pendingIntent);
 
-                // criando gereciador notificacao
                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){  // verificando versao android pra cima 25
-                    NotificationChannel channel = new NotificationChannel(canal, "canal", NotificationManager.IMPORTANCE_DEFAULT);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+                    NotificationChannel channel = new NotificationChannel(canal,"canal", NotificationManager.IMPORTANCE_DEFAULT);
 
                     AudioAttributes audioAttributes = new AudioAttributes.Builder()
                             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                            .setUsage(AudioAttributes.USAGE_ALARM).build();
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .build();
 
                     channel.setSound(som, audioAttributes);
-                    channel.setVibrationPattern(new long[] {1000, 1000}); // fazer ceular vibrar nas vercao mais novas android
+                    channel.setVibrationPattern(new long[] {1000,1000});
 
                     notificationManager.createNotificationChannel(channel);
                 }
