@@ -32,7 +32,7 @@ public class NotificationActivity extends AppCompatActivity {
 
         notificationManager.cancel(id);
 
-        showNotification(url,msg);
+        showNotification(url, msg);
     }
 
     private void showNotification(String url, String msg) {

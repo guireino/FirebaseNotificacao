@@ -39,7 +39,6 @@ public class FirebaseService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage Msg) {
 
-
         if(Msg.getData().size() > 0 ){// esse codigo é executado quando a notificacao vem de outro celular
 
             String msg = Msg.getData().get("mensagem");
